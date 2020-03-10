@@ -1,25 +1,42 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "cousera_reprod-research_proj_wk2_A"
+author: "Vivek Gera"
+date: "29/02/2020"
+output: html_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-## Loading and preprocessing the data
+## R Markdown for Personal Activity Monitoring ##
+
+The first step is to load the data from the data file. The file must be in the same path as the Rmd script
+
+```{r echo=TRUE}
+   library(dplyr)
+   library(tidyr)
+   library(pryr)
+   library(lubridate)
+   persact_mon_raw <- read.csv("activity.csv")
+   str(persact_mon_raw)
+```
+The next step is to transform the date into proper format
+
+### Converting Date ###
 
 
+```{r  echo=TRUE}
+   persact_mon_raw$date <- as_date(persact_mon_raw$date)
+   str(persact_mon_raw)
+   # quit(status=0)
+```
+Lets compute the total number of steps per day, day-wise, plot the histogram and compute the mean and median
 
-## What is mean total number of steps taken per day?
+```{r echo=TRUE}
+   persact_mon_SPD <- persact_mon_raw %>% group_by(date) %>% summarize(total_SPD = sum(steps,na.rm = TRUE)) %>% ungroup()
+   persact_mon_stats_SPD <- summarize(persact_mon_SPD,mean_SPD = mean(total_SPD), median_SPD = median(total_SPD))
+   hist(persact_mon_SPD$total_SPD,main="Total Steps Per Day Distribution",xlab="Total Steps Per Day",ylab="Frequency",col="green")
+   cat("Mean Total Steps Per Day = ",persact_mon_stats_SPD$mean_SPD[1],", Median Total Steps Per Day = ",persact_mon_stats_SPD$median_SPD[1])
+```
 
-
-
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
