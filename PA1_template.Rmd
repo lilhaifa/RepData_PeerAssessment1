@@ -18,6 +18,7 @@ The first step is to load the data from the data file. The file must be in the s
    library(tidyr)
    library(pryr)
    library(lubridate)
+   library(lattice)
    persact_mon_raw <- read.csv("activity.csv")
    str(persact_mon_raw)
 ```
