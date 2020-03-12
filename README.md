@@ -18,6 +18,12 @@ day. The data consists of two months of data from an anonymous
 individual collected during the months of October and November, 2012
 and include the number of steps taken in 5 minute intervals each day.
 
+## Instructions for viewing the output generated from the R Markdown file
+
+1. Download the file https://github.com/lilhaifa/RepData_PeerAssessment1/blob/master/coursera_reprod-research_proj_wk2.html. 
+2. View locally via a browser (safari, IE, MS Edge, Firefox or Google Chrome, etc). 
+3. The html has been generated using knitr : Rmd to html inside R Studio. 
+
 ## Data
 
 The data for this assignment can be downloaded from the course web
