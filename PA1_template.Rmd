@@ -32,12 +32,58 @@ The next step is to transform the date into proper format
    str(persact_mon_raw)
    # quit(status=0)
 ```
-Lets compute the total number of steps per day, day-wise, plot the histogram and compute the mean and median
+### compute the total number of steps per day, day-wise, plot the histogram and compute the mean and median ###
 
 ```{r echo=TRUE}
    persact_mon_SPD <- persact_mon_raw %>% group_by(date) %>% summarize(total_SPD = sum(steps,na.rm = TRUE)) %>% ungroup()
    persact_mon_stats_SPD <- summarize(persact_mon_SPD,mean_SPD = mean(total_SPD), median_SPD = median(total_SPD))
    hist(persact_mon_SPD$total_SPD,main="Total Steps Per Day Distribution",xlab="Total Steps Per Day",ylab="Frequency",col="green")
    cat("Mean Total Steps Per Day = ",persact_mon_stats_SPD$mean_SPD[1],", Median Total Steps Per Day = ",persact_mon_stats_SPD$median_SPD[1])
+```
+### Add weekdays related columns to the raw data, for later week-day wise computations ###
+
+```{r echo=TRUE}
+   persact_mon_raw$wdname <- weekdays(persact_mon_raw$date)
+   persact_mon_raw$wday <- as.POSIXlt(persact_mon_raw$date)$wday
+   persact_mon_raw$dtype <- if_else(persact_mon_raw$wday >= 1 & persact_mon_raw$wday <= 5,"weekday","weekend","NA")
+   persact_mon_raw$dtype <- as.factor(persact_mon_raw$dtype)
+   str(persact_mon_raw)
+```
+### Compute the mean steps per interval across all days ###
+
+```{r echo=TRUE}
+   persact_mon_mean_SPI <- persact_mon_raw %>% group_by(interval) %>% summarize(mean_SPI = mean(steps,na.rm = TRUE)) %>% ungroup()
+   plot(persact_mon_mean_SPI$interval,persact_mon_mean_SPI$mean_SPI,type="l",col="blue",xlab="interval",ylab="Mean Steps",main="Mean Steps Per Interval")
+   persact_mon_stats_SPI <- filter(persact_mon_mean_SPI,mean_SPI == max(mean_SPI))
+   cat("Max value of mean steps per interval = ",persact_mon_stats_SPI$mean_SPI[1],", Occurs during interval # ",persact_mon_stats_SPI$interval[1])
+```
+### Processing and strategy for missing data : Strategy is to substitute mean value per interval for the specific interval ###
+
+```{r echo=TRUE}
+   persact_mon_raw_steps_NA <- filter(persact_mon_raw,is.na(steps))
+   persact_mon_raw_steps_NNA <- filter(persact_mon_raw,!is.na(steps))
+   NA_steps <- length(persact_mon_raw_steps_NA$steps)
+   cat("# of NA steps  = ",NA_steps)
+   persact_mon_raw_steps_NA_imputed <- inner_join(persact_mon_raw_steps_NA,persact_mon_mean_SPI,by = c("interval"))
+   persact_mon_raw_steps_NA_imputed <- persact_mon_raw_steps_NA_imputed[,c(7,2,3,4,5,6)]
+   names(persact_mon_raw_steps_NA_imputed)[1] <- c("steps")
+   persact_mon_raw_NNA <- rbind(persact_mon_raw_steps_NNA,persact_mon_raw_steps_NA_imputed)
+   persact_mon_raw_NNA <- arrange(persact_mon_raw_NNA,date)
+```
+### Compare the statistics (mean and median) for the original set with NA values and the substituted set with mean values per interval ###
+
+```{r echo=TRUE}
+   persact_mon_total_SPD_NNA <- persact_mon_raw_NNA %>% group_by(date) %>% summarize(total_SPD = sum(steps)) %>% ungroup()
+   summary(persact_mon_total_SPD_NNA$total_SPD)
+   summary(persact_mon_SPD$total_SPD)
+   cat("It may be seen that the day-wise statistics are different for imputed values than for the original values")
+   hist(persact_mon_total_SPD_NNA$total_SPD,main="Total Steps Per Day Distribution : Missing Values Imputed",xlab="Total Steps Per Day",ylab="Frequency",col="green")
+```
+
+### Plot the weekday and weekend trends ###
+
+```{r echo=TRUE}
+   persact_mon_dtype_mean_SPI <- persact_mon_raw_NNA %>% group_by(dtype,interval) %>% summarize(mean_SPI = mean(steps)) %>% ungroup()
+   xyplot(mean_SPI ~ interval | dtype, data = persact_mon_dtype_mean_SPI, type = "l",col = "red", layout = c(1,2))
 ```
 
