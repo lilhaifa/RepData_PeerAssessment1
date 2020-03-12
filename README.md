@@ -20,8 +20,8 @@ and include the number of steps taken in 5 minute intervals each day.
 
 ## Instructions for viewing the output generated from the R Markdown file
 
-1. Download the file https://github.com/lilhaifa/RepData_PeerAssessment1/blob/master/coursera_reprod-research_proj_wk2.html. 
-2. View locally via a browser (safari, IE, MS Edge, Firefox or Google Chrome, etc). 
+1. Download the file https://github.com/lilhaifa/RepData_PeerAssessment1/blob/master/coursera_reprod-research_proj_wk2.zip 
+2. Unzip and view locally via a browser (safari, IE, MS Edge, Firefox or Google Chrome, etc). 
 3. The html has been generated using knitr : Rmd to html inside R Studio. 
 
 ## Data
